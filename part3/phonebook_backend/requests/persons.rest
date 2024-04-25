@@ -4,13 +4,13 @@
 GET {{url}}
 
 ###
-GET {{url}}/6622ec1833ea7d3cae9324fe
+GET {{url}}/6623f0bbaeb91a65e1d22ae3
 
 ###
 GET {{url}}/2
 
 ###
-DELETE {{url}}/2
+DELETE {{url}}/6623f0bbaeb91a65e1d22ae3
 
 ###
 POST {{url}}
@@ -19,6 +19,15 @@ Content-Type: application/json
 {
   "name": "Angel DiMaria",
   "number": "33-323423-234234"
+}
+
+###
+PUT {{url}}/6623f070a89a0a3418113a7e
+Content-Type: application/json
+
+{
+  "name": "Angel DiMaria",
+  "number": "55-5555-5555"
 }
 
 ### 

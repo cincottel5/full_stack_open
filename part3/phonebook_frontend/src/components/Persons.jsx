@@ -13,7 +13,7 @@ const Persons = ({ persons, setPersons }) => {
 		const person = persons.find(p => p.id === id)
 
 		const eventHandler = (personDeleted) =>
-			setPersons(persons.filter(p => p.id !== personDeleted.id))
+			setPersons(persons.filter(p => p.id !== id))
 
 		if (window.confirm(`Delete ${person.name}?`)) {
 			personService.remove(id)
@@ -24,7 +24,7 @@ const Persons = ({ persons, setPersons }) => {
 	return (
 		<div>
 			{persons.map(person =>
-				<PersonDetail key={person.name} person={person} handleRemove={removePerson}></PersonDetail>
+				<PersonDetail key={person.id} person={person} handleRemove={removePerson}></PersonDetail>
 			)}
 		</div>
 	)

@@ -21,6 +21,24 @@ Content-Type: application/json
   "number": "33-323423-234234"
 }
 
+### Create an invalid person
+POST {{url}}
+Content-Type: application/json
+
+{
+  "name": "An",
+  "number": "33-323423-234234"
+}
+
+### Create an invalid person
+POST {{url}}
+Content-Type: application/json
+
+{
+  "name": "Wayne Rooney",
+  "number": "33-323423-234234"
+}
+
 ###
 PUT {{url}}/6623f070a89a0a3418113a7e
 Content-Type: application/json

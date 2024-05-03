@@ -1,0 +1,25 @@
+@url = http://localhost:3001/api/blogs
+
+###
+GET {{url}}
+
+### POST WITH LIKES
+POST {{url}}
+Content-Type: application/json
+
+{
+  "title": "Humans and mutants together",
+  "author": "Charles Xavier",
+  "url": "http://wwww.xmen.com",
+  "likes": 10
+}
+
+### POST WITHOUT LIKES
+POST {{url}}
+Content-Type: application/json
+
+{
+  "title": "Humans down",
+  "author": "Magneto",
+  "url": "http://wwww.magneto.com",
+}

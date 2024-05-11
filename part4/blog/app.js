@@ -1,5 +1,6 @@
 const config = require('./utils/config')
 const express = require('express')
+require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const blogRoutes = require('./controllers/blogs')
@@ -18,7 +19,9 @@ mongoose.connect(config.MONGODB_URI)
 
 app.use(cors())
 app.use(express.json())
-app.use(middleware.requestLogger)
+
+if (process.env.NODE_ENV !== 'test')
+  app.use(middleware.requestLogger)
 
 app.use('/', baseRoutes)
 app.use('/api/blogs', blogRoutes)

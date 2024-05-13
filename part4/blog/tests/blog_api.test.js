@@ -9,102 +9,179 @@ const _ = require('lodash')
 
 const api = supertest(app)
 
-beforeEach( async () => {
-  await Blog.deleteMany({})
+describe('when there are initially some blogs saved', () => {
 
-  const blogObjs = helper.initialBlogs.map(blog => new Blog(blog))
-  const promiseArray = blogObjs.map(blog => blog.save())
-  await Promise.all(promiseArray)
-})
-
-describe('blog api', () => {
-  test('all blogs are returned', async () => {
-    const response = await api
-      .get('/api/blogs')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-
-    assert.strictEqual(response.body.length, helper.initialBlogs.length)
+  beforeEach( async () => {
+    await Blog.deleteMany({})
+    await Blog.insertMany(helper.initialBlogs)
   })
 
-  test('all blog`s key name is id', async () => {
-    const response = await api.get('/api/blogs')  
-    response.body.map(blog => assert('id' in blog))
+  describe('querying existent blogs ', () => {
+
+    test('all blogs are returned', async () => {
+      const response = await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+  
+      assert.strictEqual(response.body.length, helper.initialBlogs.length)
+    })
+  
+    test('all blog`s key name is id', async () => {
+      const response = await api.get('/api/blogs')  
+      response.body.map(blog => assert('id' in blog))
+    })
   })
 
-  test('a blog can be added', async () => {
-    const newBlog = {
-      title: "Cómo mejorar la gestión de impedimentos en Scrum",
-      author: "Juan Pérez",
-      url: "https://www.ejemplo.com/articulo-gestion-impedimentos-scrum",
-      likes: 10
-    }
+  describe('addition of a new blog', () => {
 
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
+    test('succeeds when data is valid', async () => {
+      const newBlog = {
+        title: "Cómo mejorar la gestión de impedimentos en Scrum",
+        author: "Juan Pérez",
+        url: "https://www.ejemplo.com/articulo-gestion-impedimentos-scrum",
+        likes: 10
+      }
+  
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+  
+      const blogsAtEnd = await helper.blogsInBd()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+  
+      const blogsContent = blogsAtEnd.map(({ id, ...blog}) => blog)
+      assert(blogsContent.some(b => _.isEqual(b, newBlog)))
+    })
 
-    const blogsAtEnd = await helper.blogsInBd()
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+    test('succeds even without likes field and it sets likes to 0', async () => {
+      const newBlog = {
+        title: "Cómo mejorar la gestión de impedimentos en Scrum",
+        author: "Juan Pérez",
+        url: "https://www.ejemplo.com/articulo-gestion-impedimentos-scrum",
+      }
+  
+      const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+  
+      assert.strictEqual(response.body.likes, 0)
+    })
 
-    const blogsContent = blogsAtEnd.map(({ id, ...blog}) => blog)
-    assert(blogsContent.some(b => _.isEqual(b, newBlog)))
+    test('fails with status 400 if title field is not present', async () => {
+      const newBlog = {
+        author: "Juan Pérez",
+        url: "https://www.ejemplo.com/articulo-gestion-impedimentos-scrum",
+        likes: 10
+      }
+  
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+    })
+
+    test('fails with status 400 if url field is not present', async () => {
+      const newBlog = {
+        title: "Cómo mejorar la gestión de impedimentos en Scrum",
+        author: "Juan Pérez",
+        likes: 10
+      }
+  
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+    })
+
+    test('fails with status 400 if url and title fields are not present', async () => {
+      const newBlog = {
+        author: "Juan Pérez",
+        likes: 10
+      }
+  
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+    })
   })
 
-  test('a blog without likes is added with likes 0', async () => {
-    const newBlog = {
-      title: "Cómo mejorar la gestión de impedimentos en Scrum",
-      author: "Juan Pérez",
-      url: "https://www.ejemplo.com/articulo-gestion-impedimentos-scrum",
-    }
+  describe('deletion of a blog', () => {
 
-    const response = await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
+    test('succeeds when id exists', async () => {
+      const blogsAtStart = await helper.blogsInBd()
+      const blogToDelete = blogsAtStart[0]
 
-    assert.strictEqual(response.body.likes, 0)
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
+
+      const blogsAtEnd = await helper.blogsInBd()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+
+      const blogsContent = blogsAtEnd.map(({ id, ...blog}) => blog)
+      assert(!blogsContent.some(b => _.isEqual(b, blogToDelete)))
+    })
+
+    test('fails with status code 400 when id does not exists', {todo: true}, async () => {
+      const validNonExistingId = await helper.nonExistingId()
+
+      await api
+        .delete(`/api/blogs/${validNonExistingId}`)
+        .expect(204)
+
+      const blogsAtEnd = await helper.blogsInBd()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
+    test('fails with status 400 when id has not the correct format', {todo:true}, async () => {
+      const invalidId = '5a3d5da59070081a82a3445'
+
+      await api
+        .delete(`/api/blogs/${invalidId}`)
+        .expect(400)
+
+      const blogsAtEnd = await helper.blogsInBd()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
   })
 
-  test('blog without title is not added', async () => {
-    const newBlog = {
-      author: "Juan Pérez",
-      url: "https://www.ejemplo.com/articulo-gestion-impedimentos-scrum",
-      likes: 10
-    }
-
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(400)
-  })
-
-  test('blog without url is not added', async () => {
-    const newBlog = {
-      title: "Cómo mejorar la gestión de impedimentos en Scrum",
-      author: "Juan Pérez",
-      likes: 10
-    }
-
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(400)
-  })
-
-  test('blog without url and title is not added', async () => {
-    const newBlog = {
-      author: "Juan Pérez",
-      likes: 10
-    }
-
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(400)
+  describe('update of a blog', () => {
+    test('succeeds when id exists', async () => {
+      const blogsAtStart = await helper.blogsInBd()
+      const blogToUpdate = blogsAtStart[0]
+      blogToUpdate.likes = 555
+  
+      await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(blogToUpdate)
+        .expect(200)
+  
+      const blogsAtEnd = await helper.blogsInBd()
+      const updatedBlogAtEnd = await blogsAtEnd.find(b => b.id === blogToUpdate.id)
+  
+      assert.strictEqual(updatedBlogAtEnd.likes, blogToUpdate.likes)
+    })
+  
+    test('fails when id does not exists', async () => {
+      const validNonExistingId = await helper.nonExistingId()
+      const { _id, __v, ...blog } = helper.initialBlogs[0]
+      blog.likes = 555
+  
+      await api
+        .put(`/api/blogs/${validNonExistingId}`)
+        .send(blog)
+        .expect(404)
+      
+      const blogsAtEnd = await helper.blogsInBd()
+      const blogsLikes = blogsAtEnd.map(b => b.likes)
+      assert(!blogsLikes.includes(555))
+    })
   })
 })
 

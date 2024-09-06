@@ -5,15 +5,27 @@ const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const _ = require('lodash')
+const { newToken } = require('../utils/jwt_token')
 
 const api = supertest(app)
+
+let token;
 
 describe('when there are initially some blogs saved', () => {
 
   beforeEach( async () => {
+    await User.deleteMany({})
+    const user = await new User(helper.initialUsers[0]).save()
+    token = newToken(user)
+
     await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
+
+    const blogs = helper.initialBlogs
+    blogs.map(x=> x.user = user._id)
+
+    await Blog.insertMany(blogs)
   })
 
   describe('querying existent blogs ', () => {
@@ -45,6 +57,7 @@ describe('when there are initially some blogs saved', () => {
   
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -52,7 +65,8 @@ describe('when there are initially some blogs saved', () => {
       const blogsAtEnd = await helper.blogsInBd()
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
   
-      const blogsContent = blogsAtEnd.map(({ id, ...blog}) => blog)
+      const blogsContent = blogsAtEnd.map(({ id, user, ...blog}) => blog)
+
       assert(blogsContent.some(b => _.isEqual(b, newBlog)))
     })
 
@@ -65,6 +79,7 @@ describe('when there are initially some blogs saved', () => {
   
       const response = await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -81,6 +96,7 @@ describe('when there are initially some blogs saved', () => {
   
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
     })
@@ -94,6 +110,7 @@ describe('when there are initially some blogs saved', () => {
   
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
     })
@@ -106,6 +123,7 @@ describe('when there are initially some blogs saved', () => {
   
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
     })
@@ -119,6 +137,7 @@ describe('when there are initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInBd()
@@ -133,7 +152,8 @@ describe('when there are initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${validNonExistingId}`)
-        .expect(204)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(400)
 
       const blogsAtEnd = await helper.blogsInBd()
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
@@ -144,6 +164,7 @@ describe('when there are initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${invalidId}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(400)
 
       const blogsAtEnd = await helper.blogsInBd()

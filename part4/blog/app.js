@@ -5,6 +5,8 @@ const app = express()
 const cors = require('cors')
 const blogRoutes = require('./controllers/blogs')
 const baseRoutes = require('./controllers/base')
+const userRoutes = require('./controllers/users')
+const loginRoutes = require('./controllers/login')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
@@ -23,8 +25,14 @@ app.use(express.json())
 if (process.env.NODE_ENV !== 'test')
   app.use(middleware.requestLogger)
 
+app.use(middleware.tokenExtractor)
+
 app.use('/', baseRoutes)
+app.use('/api/login', loginRoutes)
 app.use('/api/blogs', blogRoutes)
+app.use('/api/users', userRoutes)
+
+
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

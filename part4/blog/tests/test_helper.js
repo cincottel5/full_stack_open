@@ -1,5 +1,6 @@
 const note = require('../../../../full_stack_open_practice/part4/backend/models/note')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
   {
@@ -52,6 +53,15 @@ const initialBlogs = [
   }  
 ]
 
+const initialUsers = [
+  {
+    username: "test",
+    name: "Testing user",
+    passwordHash: "$2b$10$MMyFKVnC8vald3pky0IPB.G68iHMu9BpXDGm5tF5KZlINg/8WIRAy",
+    password: 'test'
+  }
+]
+
 const nonExistingId = async () => {
   const blog = new Blog({ title: 'willremovethissoon', url: 'test'})
   await blog.save()
@@ -65,8 +75,15 @@ const blogsInBd = async () => {
   return blogs.map( b => b.toJSON())
 }
 
+const usersInBd = async () => {
+  const users = await User.find({})
+  return users.map( u => u.toJSON())
+}
+
 module.exports = {
   initialBlogs,
+  initialUsers,
   nonExistingId, 
-  blogsInBd
+  blogsInBd,
+  usersInBd
 }

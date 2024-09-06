@@ -6,6 +6,7 @@ GET {{url}}
 ### POST WITH LIKES
 POST {{url}}
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QyIiwiaWQiOiI2NmQ3YzQxNGRlODRjZDg4MmJjNDljMTgiLCJpYXQiOjE3MjU2NDUzODgsImV4cCI6MTcyNTY0ODk4OH0.ciVObmjodQLBFZSbLB-aWVGOTR_VNdx0CBE_DLp5peY
 
 {
   "title": "Humans and mutants together",
@@ -23,3 +24,7 @@ Content-Type: application/json
   "author": "Magneto",
   "url": "http://wwww.magneto.com",
 }
+
+### 
+DELETE {{url}}/66da3ba158c19b54b33429ae
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QyIiwiaWQiOiI2NmQ3YzQxNGRlODRjZDg4MmJjNDljMTgiLCJpYXQiOjE3MjU2NDUzODgsImV4cCI6MTcyNTY0ODk4OH0.ciVObmjodQLBFZSbLB-aWVGOTR_VNdx0CBE_DLp5peY

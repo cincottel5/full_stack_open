@@ -17,7 +17,7 @@ const Blog = ({ blog, removeBlog }) => {
 
   const toogleVisibility = () => setDetailsVisible(!detailsVisible)
 
-  const likeClickHandle = async  () => {
+  const likeClickHandle = async () => {
     blog.likes = blog.likes + 1
     setBlogLikes(blog.likes)
     try {
@@ -47,17 +47,16 @@ const Blog = ({ blog, removeBlog }) => {
 
   const detailsRender = () => (
     <>
-      <div>{blog.url}</div>
-      <div>likes: {blogLikes} <button type='button' onClick={likeClickHandle}>like</button></div>
+      <div className="blog-url">{blog.url}</div>
+      <div className='blog-likes'>likes: {blogLikes} <button type='button' className='like-btn' onClick={likeClickHandle}>like</button></div>
       <div>{blog.user?.name}</div>
       <button onClick={removeClickHandler}>remove</button>
     </>
   )
 
   return (
-    <div style={blogStyle} >
-      {blog.title}
-      {blog.author}
+    <div style={blogStyle}>
+      {blog.title} {blog.author}
       <button onClick={toogleVisibility}>{detailsVisible ? 'hide' : 'view'}</button>
       { detailsVisible ? detailsRender() : '' }
     </div>

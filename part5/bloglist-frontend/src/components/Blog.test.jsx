@@ -49,11 +49,8 @@ describe('<Blog />', () => {
     const user = userEvent.setup()
 
     const viewButton = screen.getByText('view')
+    await user.click(viewButton)
     
-    await act(async () => {
-      await viewButton.click()
-    })
-
     const likeButton = screen.getByText('like')
     likeButton.onclick = mockHandler
 

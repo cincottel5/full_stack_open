@@ -46,7 +46,6 @@ const tokenExtractor = (request, response, next) => {
 
 const userExtractor = (request, response, next) => {
   request.user = jwtToken.verify(request.token).id
-  console.log('user', request.user)
   next()
 }
 

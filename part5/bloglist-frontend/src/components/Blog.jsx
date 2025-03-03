@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import BlogService from '../services/blogs'
 import blogs from '../services/blogs'
 
-const Blog = ({ blog, removeBlog }) => {
+const Blog = ({ blog, removeBlog, removable }) => {
   const [detailsVisible, setDetailsVisible] = useState(false)
   const [blogLikes, setBlogLikes] = useState(blog.likes)
 
@@ -19,9 +19,9 @@ const Blog = ({ blog, removeBlog }) => {
 
   const likeClickHandle = async () => {
     blog.likes = blog.likes + 1
-    setBlogLikes(blog.likes)
     try {
       await BlogService.update(blog)
+      setBlogLikes(blog.likes)
     }
     catch(err) {
       console.log(err)
@@ -45,12 +45,18 @@ const Blog = ({ blog, removeBlog }) => {
     }
   }
 
+  const renderRemoveButton = () => {
+    return removable
+    ? <button onClick={removeClickHandler}>remove</button>
+    : ''
+  }
+
   const detailsRender = () => (
     <>
       <div className="blog-url">{blog.url}</div>
       <div className='blog-likes'>likes: {blogLikes} <button type='button' className='like-btn' onClick={likeClickHandle}>like</button></div>
       <div>{blog.user?.name}</div>
-      <button onClick={removeClickHandler}>remove</button>
+      {renderRemoveButton()}
     </>
   )
 

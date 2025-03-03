@@ -23,7 +23,6 @@ const LoginForm = ({ setUser }) => {
     }
     catch (exeption) {
       notificationRef.current.displayMessage('Wrong username or password', false)
-      console.log(exeption)
     }
   }
 
@@ -35,9 +34,10 @@ const LoginForm = ({ setUser }) => {
         <div>
           username
           <input
-            type="text"
+            type='text'
+            data-testid='username'
             value={username}
-            name="Username"
+            name='Username'
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
@@ -45,9 +45,10 @@ const LoginForm = ({ setUser }) => {
         <div>
           password
           <input
-            type="password"
+            type='password'
+            data-testid='password'
             value={password}
-            name="Password"
+            name='Password'
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>

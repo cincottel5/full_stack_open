@@ -7,6 +7,7 @@ const blogRoutes = require('./controllers/blogs')
 const baseRoutes = require('./controllers/base')
 const userRoutes = require('./controllers/users')
 const loginRoutes = require('./controllers/login')
+const testingRoutes = require('./controllers/testing')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
@@ -32,7 +33,8 @@ app.use('/api/login', loginRoutes)
 app.use('/api/blogs', blogRoutes)
 app.use('/api/users', userRoutes)
 
-
+if (process.env.NODE_ENV === 'test')
+  app.use('/api/testing', testingRoutes)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

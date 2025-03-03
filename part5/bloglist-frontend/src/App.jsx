@@ -54,7 +54,11 @@ const App = () => {
   const blogList = () => (
     <div>
       {sortBlogs.map(blog =>
-        <Blog key={blog.id} blog={blog} removeBlog={removeBlog}/>
+        <Blog 
+          key={blog.id} blog={blog} 
+          removeBlog={removeBlog} 
+          removable={blog.user?.username === user.username}
+        />
       )}
     </div>
   )

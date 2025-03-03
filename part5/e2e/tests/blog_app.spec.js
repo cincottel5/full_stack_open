@@ -59,14 +59,10 @@ describe('Blog app', () => {
 
       test('a blog can be liked', async ({ page }) => {
         const blog = getDefaultBlog()
+        const numOfLikes = 1
+        await likeBlogNTimes(page, blog, numOfLikes)
         
-        const otherBlogText = await page.getByText(blog.title, { exact: false})
-        const otherBlogElement = await otherBlogText.locator('..')
-
-        await otherBlogElement.getByRole('button', { name: 'view'}).click()
-        await otherBlogElement.getByRole('button', { name: 'like'}).click()
-
-        expect(page.getByText('likes: 1')).toBeVisible()
+        expect(page.getByText(`likes: ${numOfLikes}`)).toBeVisible()
       })
 
       test('a blog can be delete by user creator', async ({ page }) => {
@@ -83,7 +79,7 @@ describe('Blog app', () => {
 
       test('a blog cannot be delete by no-creator blog user', async ({ page }) => {
         const user = getDefaultUser(2)
-        await logout()
+        await logout(page)
         await loginWith(page, user.username, user.password)
         
         const blog = getDefaultBlog()
@@ -109,12 +105,13 @@ describe('Blog app', () => {
 
         await likeBlogNTimes(page, blog1, 4)
         await likeBlogNTimes(page, blog2, 5)
-        await likeBlogNTimes(page, blog2, 2)
+        await likeBlogNTimes(page, blog3, 2)
 
-        await logout()
-        await loginWith(page, getDefaultUser().username, getDefaultUser().password)
+        await page.reload()
 
-        
+        const titleList = await page.locator('.blog-title')
+        const expectedTitlesAscending = [blog2.title, blog1.title, blog3.title]
+        await expect(titleList).toHaveText(expectedTitlesAscending)
       })
     })
   })

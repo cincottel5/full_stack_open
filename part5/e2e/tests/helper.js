@@ -25,22 +25,20 @@ const createBlog = async (page, blog) => {
 }
 
 const logout = async (page) => {
-  await page.getByRole('button', { name: 'logout' }).waitFor().click()
+  await page.getByRole('button', { name: 'logout' }).click()
 }
 
 const likeBlogNTimes = async (page, blog, times) => {
-  const otherBlogText = await page.getByText(blog.title, { exact: false})
+  const otherBlogText = await page.getByText(blog.title, { exact: true})
   const otherBlogElement = await otherBlogText.locator('..')
 
-  await otherBlogElement.getByRole('button', { name: 'view'}).click()
-  await otherBlogElement.getByRole('button', { name: 'like'}).click()
+  for(let i = 0; i < times; i++) {
+    if (i == 0)
+      await otherBlogElement.getByRole('button', { name: 'view'}).click()
 
-  // const list = Array(times).keys()
-  // for(let i = 0; i < times; i++) {
-  // //for await(const i of list) {
-    
-  //   //await otherBlogElement.getByText(`likes: ${i+1}`).waitFor()
-  // }
+    await otherBlogElement.getByRole('button', { name: 'like'}).click()
+    await otherBlogElement.getByText(`likes: ${i+1}`).waitFor()    
+  }
 }
 
 export { 

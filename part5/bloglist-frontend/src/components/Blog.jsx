@@ -62,7 +62,7 @@ const Blog = ({ blog, removeBlog, removable }) => {
 
   return (
     <div style={blogStyle}>
-      {blog.title} {blog.author}
+      <span className='blog-title'>{blog.title}</span> <span className='blog-author'>{blog.author}</span>
       <button onClick={toogleVisibility}>{detailsVisible ? 'hide' : 'view'}</button>
       { detailsVisible ? detailsRender() : '' }
     </div>

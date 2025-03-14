@@ -10,7 +10,7 @@ describe('Filter reducer', () => {
   })
 
   test('change action modify state', () => {
-    const action = { type: 'SET_FILTER', payload: 'ab' }
+    const action = { type: 'filter/filterChange', payload: 'test' }
     
     const state = ''
     deepFreeze(state)

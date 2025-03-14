@@ -17,7 +17,7 @@ describe('anecdoteReducer', () => {
   })
 
   test('vote increments', () => {
-    const action = { type: 'VOTE', payload: { id: 1 } }
+    const action = { type: 'anecdotes/voteAnecdote', payload:  1  }
     const state = initialState
 
     deepFreeze(state)
@@ -29,8 +29,8 @@ describe('anecdoteReducer', () => {
 
   test('create adds an element', () => {
     const action = {
-      type: 'NEW',
-      payload: { id: 3, content: 'test new', votes: 0}
+      type: 'anecdotes/createAnecdote',
+      payload: 'test new'
     }
 
     const state = initialState
@@ -38,6 +38,6 @@ describe('anecdoteReducer', () => {
 
     const newState = anecdoteReducer(state, action)
     expect(newState).toHaveLength(3)
-    expect(newState).toContainEqual(action.payload)
+    expect(newState.map(x=>x.content)).toContainEqual(action.payload)
   })
 })

@@ -13,7 +13,7 @@ describe('anecdoteReducer', () => {
     const action = { type: 'TEST' }
 
     const newState = anecdoteReducer(undefined, action)
-    expect(newState).toHaveLength(6)
+    expect(newState).toHaveLength(0)
   })
 
   test('vote increments', () => {
@@ -30,7 +30,7 @@ describe('anecdoteReducer', () => {
   test('create adds an element', () => {
     const action = {
       type: 'anecdotes/createAnecdote',
-      payload: 'test new'
+      payload: {content: 'test new', id:3, votes: 0}
     }
 
     const state = initialState
@@ -38,6 +38,6 @@ describe('anecdoteReducer', () => {
 
     const newState = anecdoteReducer(state, action)
     expect(newState).toHaveLength(3)
-    expect(newState.map(x=>x.content)).toContainEqual(action.payload)
+    expect(newState.map(x=>x.content)).toContainEqual(action.payload.content)
   })
 })

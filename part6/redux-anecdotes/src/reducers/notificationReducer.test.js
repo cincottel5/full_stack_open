@@ -6,7 +6,7 @@ describe('Notification reducer', () => {
   test('is empty at start', () => {
     const action = { type: 'TEST' }
     const newState = notificationReducer(undefined, action)
-    expect(newState).toBe('Welcome')
+    expect(newState).toBe('')
   })
 
   test('change action modify state', () => {

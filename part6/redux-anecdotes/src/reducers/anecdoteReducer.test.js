@@ -1,43 +1,51 @@
 import { render, screen } from '@testing-library/react'
 import deepFreeze from 'deep-freeze'
-import anecdoteReducer from './anecdoteReducer'
+import anecdoteReducer, { updateAnecdote, createAnecdote } from './anecdoteReducer'
+import anecdoteService from '../services/anecdotes'
+import setupStore from '../store'
 
 describe('anecdoteReducer', () => {
+  let store
 
-  const initialState = [
-    { id: 1, content: 'test 1', votes: 10 },
-    { id: 2, content: 'test 2', votes: 5 }
-  ]
+  vi.mock('../services/anecdotes')
 
-  test('return proper state when state is undefined', () => {
-    const action = { type: 'TEST' }
+  const initialState = { 
+    anecdotes: [
+      { id: 1, content: 'test 1', votes: 10 },
+      { id: 2, content: 'test 2', votes: 5 }
+    ] 
+  }
 
-    const newState = anecdoteReducer(undefined, action)
-    expect(newState).toHaveLength(0)
+  beforeEach (() => {
+    store = setupStore(initialState)
   })
 
-  test('vote increments', () => {
-    const action = { type: 'anecdotes/voteAnecdote', payload:  1  }
-    const state = initialState
+  test('return proper state at start', () => {
+    const newState = store.getState().anecdotes
 
-    deepFreeze(state)
-    const newState = anecdoteReducer(state, action)
-    const [anecdote1, anecdote2] = newState
-    expect(anecdote1.votes).toBe(11)
-    expect(anecdote2.votes).toBe(5)
+    expect(newState).toHaveLength(2)
   })
 
-  test('create adds an element', () => {
-    const action = {
-      type: 'anecdotes/createAnecdote',
-      payload: {content: 'test new', id:3, votes: 0}
-    }
+  test('vote increments', async () => {
+    const anecdoteToUpdate = initialState.anecdotes[0]
+    const updatedAnecdote = { ...anecdoteToUpdate, votes: anecdoteToUpdate.votes + 1 }
 
-    const state = initialState
-    deepFreeze(state)
+    anecdoteService.updateAnecdote.mockResolvedValue(updatedAnecdote)
+    await store.dispatch(updateAnecdote(updateAnecdote))
+    const newState = store.getState().anecdotes
 
-    const newState = anecdoteReducer(state, action)
+    expect(newState[0].votes).toBe(11)
+    expect(newState[1].votes).toBe(5)
+  })
+
+  test('create adds an element', async () => {
+    const newContent = 'Test note created'
+    anecdoteService.createNew.mockResolvedValue({id: 3, content: newContent, votes: 0})
+
+    await store.dispatch(createAnecdote(newContent))
+    const newState = store.getState().anecdotes
+
     expect(newState).toHaveLength(3)
-    expect(newState.map(x=>x.content)).toContainEqual(action.payload.content)
+    expect(newState.map(x=>x.content)).toContainEqual(newContent)
   })
 })

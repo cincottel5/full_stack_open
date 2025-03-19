@@ -1,5 +1,5 @@
 import deepFreeze from "deep-freeze"
-import notificationReducer from "./notificationReducer"
+import notificationReducer, { setNotification, setNotificationState, clearNotification } from "./notificationReducer"
 
 describe('Notification reducer', () => {
   
@@ -9,13 +9,14 @@ describe('Notification reducer', () => {
     expect(newState).toBe('')
   })
 
-  test('change action modify state', () => {
-    const action = { type: 'notification/setNotification', payload: 'test' }
-    
-    const state = ''
-    deepFreeze(state)
+  test('change action modify state', async () => {
+    const dispatch = vi.fn()
+    const message = 'test notification'
+    const secondsDelay = 1
 
-    const newState = notificationReducer(state, action)
-    expect(newState).toBe(action.payload)
+    await setNotification(message, secondsDelay)(dispatch)
+
+    expect(dispatch).toHaveBeenCalledWith(setNotificationState(message))
+    expect(dispatch).toHaveBeenCalledWith(clearNotification())
   })
 })

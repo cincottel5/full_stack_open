@@ -1,0 +1,24 @@
+.notification {
+  border-style: solid;
+  background: lightgrey;
+  font-size: 20px;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.notification-success {
+  border-color: green;
+  color: green;
+}
+
+.notification-error {
+  border-color: red;
+  color: red;
+}
+
+.blog-list-element {
+  border: 1px solid #000;
+  padding-top: 10px;
+  margin-bottom: 3px;
+}

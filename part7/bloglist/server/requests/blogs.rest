@@ -1,0 +1,39 @@
+@url = http://localhost:3001/api/blogs
+
+###
+GET {{url}}
+
+### POST WITH LIKES
+POST {{url}}
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QyIiwiaWQiOiI2N2YzNDI4OWJlYzYyNDUwZmI0YjQ4ZmQiLCJpYXQiOjE3NDUyMDUzMDgsImV4cCI6MTc0NTIwODkwOH0.ALN_dsD60FCMeZP9tubQliHFi614-a1Tvt10FdYxEy8
+
+{
+  "title": "Humans and mutants together 2",
+  "author": "Charles Xavier",
+  "url": "http://wwww.xmen.com",
+  "likes": 10
+}
+
+### POST WITHOUT LIKES
+POST {{url}}
+Content-Type: application/json
+
+{
+  "title": "Humans down",
+  "author": "Magneto",
+  "url": "http://wwww.magneto.com",
+}
+
+### 
+DELETE {{url}}/66eb156afa8585252eb171af
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjY2ZDdjMjg2NzNjMTFlMDcyMmY0ZjNiYiIsImlhdCI6MTcyODYwMTU5OCwiZXhwIjoxNzI4NjA1MTk4fQ.UWYCMUAd5Tis66haBSAtE-lHcbshCo-SI-wvaFGJvyU
+
+### POST WITHOUT LIKES
+POST {{url}}/6801ba3a2f987d7e7d0c3cc3/comments
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QyIiwiaWQiOiI2N2YzNDI4OWJlYzYyNDUwZmI0YjQ4ZmQiLCJpYXQiOjE3NDUyMDUzMDgsImV4cCI6MTc0NTIwODkwOH0.ALN_dsD60FCMeZP9tubQliHFi614-a1Tvt10FdYxEy8
+
+{
+  "comment": "this is a request comment"
+}

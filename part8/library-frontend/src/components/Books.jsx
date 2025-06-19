@@ -1,34 +1,44 @@
-import { useQuery } from '@apollo/client'
-import { ALL_BOOKS } from '../utils/queries'
+import { useState, useEffect } from 'react'
+import BookList from './BookList'
+import useBooks from '../hooks/Books'
+import PropTypes from 'prop-types'
 
-const Books = (props) => {
-  const result = useQuery(ALL_BOOKS)
-  if (result.loading) return <div>loading...</div>
+const Books = ({selectedGenre, setSelectedGenre}) => {
+  const [genres, setGenres] = useState(new Set())
+  
+  const { loading, error, data } = useBooks(selectedGenre)
+  
+  useEffect(() => {
+    if (data?.allBooks == null || genres.size > 0) return 
 
-  const books = result.data.allBooks
+    const reducer = (accum, current) => accum.concat(...current.genres)
+    let genresArray = data.allBooks.reduce(reducer, [])
+    
+    setGenres(new Set([...genresArray]))
+  }, [data])
 
+  if (loading) return <div>loading...</div>
+  if (error) return <div>No data available</div>
+
+  const books = data.allBooks
+  
   return (
     <div>
       <h2>books</h2>
-
-      <table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>author</th>
-            <th>published</th>
-          </tr>
-          {books.map((a) => (
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author}</td>
-              <td>{a.published}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+     <BookList books={books}/>
+      <div>
+        {Array.from(genres).map(g =>
+          <button key={g} type='button' onClick={() => setSelectedGenre(g)}>{g}</button>
+        )}
+        <button type='button' onClick={() => setSelectedGenre(null)}>all genres</button>
+      </div>
     </div>
   )
+}
+
+Books.propTypes = {
+  selectedGenre: PropTypes.any,
+  setSelectedGenre: PropTypes.any
 }
 
 export default Books

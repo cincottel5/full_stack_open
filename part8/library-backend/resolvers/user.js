@@ -22,6 +22,7 @@ const login = async (root, args) => {
 
   const userForToken = {
     username: user.username,
+    favoriteGenre: user.favoriteGenre,
     id: user._id
   }
 

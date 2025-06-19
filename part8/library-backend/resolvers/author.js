@@ -2,7 +2,7 @@ const Author = require('../models/author')
 const Book = require('../models/book')
 const { graphError } = require('../utils/graph-errors')
 
-const editAuthor = async (root, args) => {
+const editAuthor = async (root, args, context) => {
   const currentUser = context.currentUser
   if (!currentUser) graphError('not authenticated')
 

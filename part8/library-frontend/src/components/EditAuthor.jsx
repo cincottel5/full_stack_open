@@ -1,16 +1,25 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { useMutation } from '@apollo/client'
 import Select from 'react-select'
+import { useDispatch } from 'react-redux'
+import { notify } from '../reducers/notificationReducer'
 import { EDIT_AUTHOR_BIRTHDATE, ALL_AUTHORS } from '../utils/queries'
 
-const EditAuthor = ({authors}) => {
+const propTypes = {
+  authors: PropTypes.any
+}
+
+const EditAuthor = ({ authors }) => {
+  const dispatch = useDispatch()
+
   const [name, setName] = useState(null)
   const [born, setBorn] = useState('')
 
-  const [changeBirthdate, result] = useMutation(EDIT_AUTHOR_BIRTHDATE, {
-    refetchQueries: [ {query: ALL_AUTHORS}],
+  const [changeBirthdate] = useMutation(EDIT_AUTHOR_BIRTHDATE, {
+    refetchQueries: [{ query: ALL_AUTHORS }],
     onError: error => {
-      console.log(error)
+      dispatch(notify(error.message))
     }
   })
 
@@ -36,15 +45,15 @@ const EditAuthor = ({authors}) => {
           onChange={setName}
           value={name}
         />
-
         <div>
           born <input type="text" value={born} onChange={({target}) => setBorn(target.value)} />
         </div>
-
         <button type="submit">update author</button>
       </form>
     </>
   )
 }
+
+EditAuthor.propTypes = propTypes
 
 export default EditAuthor

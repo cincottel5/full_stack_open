@@ -1,12 +1,28 @@
 import { ALL_AUTHORS } from '../utils/queries' 
 import { useQuery } from '@apollo/client'
 import EditAuthor from './EditAuthor'
+import { useDispatch } from 'react-redux'
+import { notify } from '../reducers/notificationReducer'
+import { useEffect } from 'react'
 
-const Authors = (props) => {
-  const result = useQuery(ALL_AUTHORS)
-  if (result.loading) return <div>loading...</div>
+const Authors = ({token}) => {
+  const dispatch = useDispatch()
+  const { loading, error, data } = useQuery(ALL_AUTHORS)
 
-  const authors = result.data.allAuthors
+  useEffect(()=> {
+    if (error) 
+      dispatch(notify(error.message))
+  }, [error])
+
+  const renderEdit = () => {
+    if (!token) return null
+    return <EditAuthor authors={authors}/>
+  }
+
+  if (loading) return <div>loading...</div>
+  if (error) return <div>No data available</div>
+
+  const authors = data.allAuthors
 
   return (
     <div>
@@ -28,7 +44,7 @@ const Authors = (props) => {
         </tbody>
       </table>
 
-      <EditAuthor authors={authors}/>
+      { renderEdit() }
     </div>
   )
 }

@@ -27,7 +27,6 @@ const addBook = async (root, args, context) => {
   if (!author) graphError('Saving book fails', args.title, null)
 
   book.author = author
-
   try {
     await book.save()
   } catch (error) { 

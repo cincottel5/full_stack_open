@@ -9,7 +9,7 @@ const Books = ({selectedGenre, setSelectedGenre}) => {
   const { loading, error, data } = useBooks(selectedGenre)
   
   useEffect(() => {
-    if (data?.allBooks == null || genres.size > 0) return 
+    if (data?.allBooks == null || selectedGenre != null) return 
 
     const reducer = (accum, current) => accum.concat(...current.genres)
     let genresArray = data.allBooks.reduce(reducer, [])

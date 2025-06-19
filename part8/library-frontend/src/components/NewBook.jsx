@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { CREATE_BOOK, ALL_BOOKS } from '../utils/queries'
+import PropTypes from 'prop-types'
 
-const NewBook = () => {
+const NewBook = ({selectedGenre}) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
@@ -80,5 +81,10 @@ const NewBook = () => {
     </div>
   )
 }
+
+NewBook.propTypes = {
+  selectedGenre: PropTypes.any
+}
+
 
 export default NewBook

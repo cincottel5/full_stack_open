@@ -21,6 +21,7 @@ const editAuthor = async (root, args, context) => {
 }
 
 const getBookCount = async root => 
-  Book.collection.countDocuments({author: root._id})
+  root.books.length
+  //Book.collection.countDocuments({author: root._id})
 
 module.exports = { editAuthor, getBookCount }

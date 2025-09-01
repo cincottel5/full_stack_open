@@ -27,11 +27,16 @@ const addBook = async (root, args, context) => {
   if (!author) graphError('Saving book fails', args.title, null)
 
   book.author = author
+  author.books = author.books.concat(book)
   try {
     await book.save()
+    await author.save()
+    
   } catch (error) { 
     graphError('Saving book fails', args.title, error)
   }
+
+  context.pubsub.publish('BOOK_ADDED', { bookAdded: book})
 
   return book
 }

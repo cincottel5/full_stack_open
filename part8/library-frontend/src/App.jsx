@@ -6,11 +6,40 @@ import NewBook from "./components/NewBook"
 import Recommendations from "./components/Recommendations"
 import Notification from "./components/Notification"
 import { Route, Routes, Navigate, useNavigate} from 'react-router-dom'
-import { useApolloClient } from "@apollo/client"
+import { useApolloClient, useSubscription } from "@apollo/client"
+import { useDispatch } from "react-redux"
+import { BOOK_ADDED, ALL_BOOKS } from "./utils/queries"
+import { notify } from "./reducers/notificationReducer"
+
+export const updateCache = (cache, query, addedBook) => {
+  const uniqByName = a => {
+    let seen = new Set()
+
+    return a.filter(item => {
+      let k = item.title
+      return seen.has(k) ? false : seen.add(k)
+    })
+  }
+
+  //cache.updateQuery( query, ({ allBooks}) => ({ allBooks: uniqByName(allBooks.concat(addedBook))}))
+  cache.updateQuery(query, (data) => { 
+    return { allBooks: uniqByName((data?.allBooks||[]).concat(addedBook))}
+   })
+  //({ allBooks }) => ({ allBooks: uniqByName((allBooks||[]).concat(addedBook))}))
+  //   query, 
+  //   (cachedData) => {
+  //   console.log('cached data', cachedData)
+  //   const allBooks = cachedData ? cachedData.allBooks : []
+  //   return { allBooks: uniqByName(allBooks.concat(addedBook))}
+  // })
+
+    //({ allBooks: uniqByName(allBooks.concat(addedBook))}))
+}
 
 const App = () => {
-  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const client = useApolloClient()
+  const navigate = useNavigate()
   const [token, setToken] = useState(null)
   const [selectedGenre, setSelectedGenre] = useState(null)
 
@@ -25,6 +54,22 @@ const App = () => {
 
     return <button onClick={() => navigate('/login')}>login</button> 
   }
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      console.log('data from subscription', data)
+      console.log('client from subscription', client)
+      try {
+        const addedBook = data.data.bookAdded
+        dispatch(notify(`${addedBook.title} added`))
+        updateCache(client.cache, { query: ALL_BOOKS }, addedBook)
+      }
+      catch (err) {
+        console.log(err)
+        notify(err)
+      }
+    }
+  })
 
   const renderRouteByToken = () => {
     if (token) return(

@@ -7,7 +7,7 @@
     "test": "tsx --test **/*.test.ts",
     "tsc": "tsc",
     "tsx": "tsx",
-    "dev": "ts-node-dev index.ts",
+    "dev": "ts-node-dev src/index.ts",
     "start": "node build/index.js",
     "lint": "eslint ."
   },

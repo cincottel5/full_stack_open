@@ -20,4 +20,24 @@ test('get patients is not showing ssn', async () => {
 
   if (result.body.length > 0) 
     assert(!('ssn' in result.body[0]))
-})
+});
+
+test('adding a new patient', async () => {
+  const newPatient = {
+    name: 'Chanel Kafka',
+    dateOfBirth: '2012-07-01',
+    ssn: '123-123',
+    gender: 'female',
+    occupation: 'housekeeper'
+  };
+
+  const result = await api
+    .post('/api/patients')
+    .send(newPatient)
+    .expect(201)
+
+  const created = result.body;
+
+  assert('id' in created)
+  assert(created['name'] === newPatient.name);
+});

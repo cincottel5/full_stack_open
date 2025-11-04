@@ -22,7 +22,7 @@ test('get patients is not showing ssn', async () => {
     assert(!('ssn' in result.body[0]))
 });
 
-test('adding a new patient', async () => {
+test('adding a new patient with right request should success', async () => {
   const newPatient = {
     name: 'Chanel Kafka',
     dateOfBirth: '2012-07-01',
@@ -40,4 +40,20 @@ test('adding a new patient', async () => {
 
   assert('id' in created)
   assert(created['name'] === newPatient.name);
+});
+
+test('trying to add a new patient with wrong request should fail', async () => {
+  const newPatient = {
+    name: 'Chanel Kafka',
+    dateOfBirth: '2012-07-01',
+    ssn: '123-123',
+    occupation: 'housekeeper'
+  };
+
+  const result = await api
+    .post('/api/patients')
+    .send(newPatient)
+    .expect(400);
+
+  assert('error' in result.body);
 });

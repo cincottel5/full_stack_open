@@ -1,16 +1,14 @@
-type coursePart = {
-  name: string
-  exerciseCount: number
-}
+import type { CoursePart } from "../types"
+import Part from "./Part"
 
 interface ContentProps {
-  courseParts: coursePart[]
+  courseParts: CoursePart[]
 }
 
 const Content = (props: ContentProps) => (
   <>
     {props.courseParts.map(part =>
-      <p>{part.name} {part.exerciseCount}</p>
+      <Part key={part.name} coursePart={part}/>
     )}
   </>
 )
